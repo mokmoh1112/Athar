@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق أَثَر | محمد خير أبو بلال</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+        :root { --primary: #1a2a3a; --accent: #c5a059; --bg: #f8f9fa; --white: #ffffff; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg); margin: 0; display: flex; flex-direction: column; min-height: 100vh; color: var(--primary); }
+        .header { background-color: var(--primary); color: var(--white); padding: 30px 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        .container { flex: 1; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+        .card { background: var(--white); width: 100%; max-width: 450px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+        .btn { background-color: var(--white); color: var(--primary); border: 2px solid #eee; padding: 15px 20px; margin: 10px 0; width: 100%; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Tajawal', sans-serif; }
+        .btn:hover { border-color: var(--accent); background-color: #fffdf9; transform: translateY(-2px); }
+        .btn-start { background-color: var(--primary); color: var(--accent); border: none; }
+        .timer-container { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin: 20px 0; overflow: hidden; }
+        #timer-bar { height: 100%; background: var(--accent); width: 100%; transition: 0.1s linear; }
+        .score-display { font-size: 18px; font-weight: 800; margin-bottom: 15px; color: var(--accent); }
+        .hidden { display: none !important; }
+        footer { padding: 20px; text-align: center; font-size: 13px; background: #eee; color: #666; }
+        .footer-name { display: block; margin-top: 5px; font-weight: 700; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>أَثَر</h1>
+        <p>تطبيق المسابقات الثقافية</p>
+    </div>
+
+    <div class="container">
+        <div id="start-screen" class="card">
+            <h2 style="margin-top:0;">مرحباً بك</h2>
+            <p>اختبر معلوماتك الإسلامية (خيارات عشوائية)</p>
+            <button class="btn btn-start" onclick="showLevels()">ابدأ التحدي</button>
+        </div>
+
+        <div id="level-screen" class="card hidden">
+            <h3 style="margin-top:0;">اختر مستوى الصعوبة</h3>
+            <button class="btn" onclick="startQuiz('easy')">🌱 المستوى السهل</button>
+            <button class="btn" onclick="startQuiz('medium')">⚡ المستوى المتوسط</button>
+            <button class="btn" onclick="startQuiz('hard')">🔥 المستوى الصعب جداً</button>
+        </div>
+
+        <div id="game-screen" class="card hidden">
+            <div class="score-display">النقاط: <span id="score-val">0</span></div>
+            <div class="timer-container"><div id="timer-bar"></div></div>
+            <h3 id="question-text" style="min-height: 60px; line-height: 1.5;"></h3>
+            <div id="options-area"></div>
+        </div>
+    </div>
+
+    <footer>
+        العلم يبقى أثراً لا يزول
+        <span class="footer-name">تصميم: محمد خير ابو بلال</span>
+    </footer>
+
+    <script>
+        const QUESTIONS = {
+            easy: [
+                {q: "من هو نبي الإسلام؟", a: "محمد ﷺ", w: ["عيسى عليه السلام", "موسى عليه السلام"]},
+                {q: "كم عدد الصلوات المفروضة؟", a: "5 صلوات", w: ["3 صلوات", "7 صلوات"]},
+                {q: "ما هو كتاب المسلمين؟", a: "القرآن الكريم", w: ["الإنجيل", "التوراة"]},
+                {q: "في أي شهر يصوم المسلمون؟", a: "رمضان", w: ["شعبان", "محرم"]},
+                {q: "من هو أول نبي؟", a: "آدم عليه السلام", w: ["نوح عليه السلام", "إبراهيم عليه السلام"]},
+                {q: "إلى أين يتجه المسلمون في صلاتهم؟", a: "الكعبة", w: ["بيت المقدس", "المدينة"]},
+                {q: "كم عدد أركان الإسلام؟", a: "5 أركان", w: ["4 أركان", "6 أركان"]},
+                {q: "ما اسم المدينة التي فيها الكعبة؟", a: "مكة المكرمة", w: ["المدينة المنورة", "الرياض"]},
+                {q: "من هو خاتم الأنبياء؟", a: "محمد ﷺ", w: ["إبراهيم عليه السلام", "يحيى عليه السلام"]},
+                {q: "كم عدد ركعات صلاة الفجر؟", a: "ركعتان", w: ["3 ركعات", "4 ركعات"]},
+                {q: "ما هي ليلة نزول القرآن؟", a: "ليلة القدر", w: ["ليلة الإسراء", "ليلة النصف"]},
+                {q: "ما اسم والد النبي محمد ﷺ؟", a: "عبد الله", w: ["عبد المطلب", "أبو طالب"]},
+                {q: "ما اسم زوجة النبي الأولى؟", a: "خديجة بنت خويلد", w: ["عائشة", "حفصة"]},
+                {q: "ما اسم أول مسجد في الإسلام؟", a: "مسجد قباء", w: ["المسجد الحرام", "الأقصى"]},
+                {q: "كم عدد أجزاء القرآن الكريم؟", a: "30 جزءاً", w: ["20 جزءاً", "60 جزءاً"]}
+            ],
+            medium: [
+                {q: "من هو الملقب بالصديق؟", a: "أبو بكر الصديق", w: ["عمر بن الخطاب", "عثمان بن عفان"]},
+                {q: "ما هي القبلة الأولى للمسلمين؟", a: "بيت المقدس", w: ["الكعبة المشرفة", "مسجد قباء"]},
+                {q: "كم عدد أركان الإيمان؟", a: "6 أركان", w: ["5 أركان", "7 أركان"]},
+                {q: "من هو الملك الموكل بالوحي؟", a: "جبريل عليه السلام", w: ["ميكائيل", "إسرافيل"]},
+                {q: "في أي مدينة توفي النبي ﷺ؟", a: "المدينة المنورة", w: ["مكة المكرمة", "الطائف"]},
+                {q: "ما هي أطول سورة في القرآن؟", a: "سورة البقرة", w: ["سورة آل عمران", "سورة النساء"]},
+                {q: "من هو الملقب بالفاروق؟", a: "عمر بن الخطاب", w: ["علي بن أبي طالب", "خالد بن الوليد"]},
+                {q: "من هو النبي الذي ابتلعه الحوت؟", a: "يونس عليه السلام", w: ["يوسف عليه السلام", "أيوب عليه السلام"]},
+                {q: "ما هي السورة التي تسمى عروس القرآن؟", a: "سورة الرحمن", w: ["سورة يس", "سورة الملك"]},
+                {q: "ما اسم ناقة النبي ﷺ؟", a: "القصواء", w: ["العضباء", "الشهباء"]},
+                {q: "كم عدد مصارف الزكاة؟", a: "8 مصارف", w: ["5 مصارف", "10 مصارف"]},
+                {q: "من هو مؤذن الرسول ﷺ؟", a: "بلال بن رباح", w: ["أنس بن مالك", "عمار بن ياسر"]},
+                {q: "ما هي السورة التي تعدل ثلث القرآن؟", a: "سورة الإخلاص", w: ["سورة الفاتحة", "سورة الكافرون"]},
+                {q: "في أي سنة هجرية كان فتح مكة؟", a: "8 هجرية", w: ["6 هجرية", "2 هجرية"]},
+                {q: "كم عدد ركعات صلاة الظهر؟", a: "4 ركعات", w: ["2 ركعة", "3 ركعات"]}
+            ],
+            hard: [
+                {q: "من هو الصحابي الذي تستحي منه الملائكة؟", a: "عثمان بن عفان", w: ["أبو بكر الصديق", "علي بن أبي طالب"]},
+                {q: "ما هي السورة التي بدأت باسم ثمرتين؟", a: "سورة التين", w: ["سورة النجم", "سورة النحل"]},
+                {q: "من هو الملقب بأمين هذه الأمة؟", a: "أبو عبيدة عامر بن الجراح", w: ["معاذ بن جبل", "زيد بن ثابت"]},
+                {q: "ما هي السورة التي تسمى الفاضحة؟", a: "سورة التوبة", w: ["سورة المنافقون", "سورة الأحزاب"]},
+                {q: "كم عدد السجدات في القرآن الكريم؟", a: "15 سجدة", w: ["12 سجدة", "10 سجدات"]},
+                {q: "من هو النبي الذي أُرسل إلى قوم عاد؟", a: "هود عليه السلام", w: ["صالح عليه السلام", "شعيب عليه السلام"]},
+                {q: "ما هي السورة التي لا تبدأ بالبسملة؟", a: "سورة التوبة", w: ["سورة الكهف", "سورة النور"]},
+                {q: "من هو الصحابي الذي اهتز لوفاته عرش الرحمن؟", a: "سعد بن معاذ", w: ["جعفر بن أبي طالب", "حمزة"]},
+                {q: "ما هي أصغر سورة في القرآن الكريم؟", a: "سورة الكوثر", w: ["سورة العصر", "سورة الإخلاص"]},
+                {q: "من هو النبي الملقب بكليم الله؟", a: "موسى عليه السلام", w: ["عيسى عليه السلام", "إبراهيم عليه السلام"]},
+                {q: "كم مكث النبي ﷺ في مكة بعد البعثة؟", a: "13 سنة", w: ["10 سنوات", "23 سنة"]},
+                {q: "ما هي السورة التي خلت من حرف الميم؟", a: "سورة الكوثر", w: ["سورة الإخلاص", "سورة الفلق"]},
+                {q: "من قتله وحشي في غزوة أحد؟", a: "حمزة بن عبد المطلب", w: ["مصعب بن عمير", "زيد بن حارثة"]},
+                {q: "ما اسم الغار الذي كان يتعبد فيه النبي؟", a: "غار حراء", w: ["غار ثور", "غار أحد"]},
+                {q: "ما هي السورة التي ذكرت فيها البسملة مرتين؟", a: "سورة النمل", w: ["سورة الفاتحة", "سورة العلق"]}
+            ]
+        };
+
+        let currentScore = 0;
+        let pool = [];
+        let timer;
+
+        function showLevels() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('level-screen').classList.remove('hidden');
+        }
+
+        function startQuiz(lvl) {
+            pool = [...QUESTIONS[lvl]];
+            currentScore = 0;
+            document.getElementById('level-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            loadNext();
+        }
+
+        function loadNext() {
+            if (timer) clearInterval(timer);
+            if (pool.length === 0) {
+                alert("انتهى التحدي! نقاطك الكلية: " + currentScore);
+                location.reload();
+                return;
+            }
+
+            const idx = Math.floor(Math.random() * pool.length);
+            const qData = pool.splice(idx, 1)[0];
+
+            // خلط الخيارات عشوائياً
+            let options = [qData.a, ...qData.w].sort(() => Math.random() - 0.5);
+
+            document.getElementById('question-text').innerText = qData.q;
+            document.getElementById('score-val').innerText = currentScore;
+
+            const area = document.getElementById('options-area');
+            area.innerHTML = "";
+
+            options.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = "btn";
+                b.innerText = opt;
+                b.onclick = () => {
+                    if (opt === qData.a) {
+                        currentScore += 10;
+                        loadNext();
+                    } else {
+                        alert("خطأ! الإجابة الصحيحة هي: " + qData.a);
+                        loadNext();
+                    }
+                };
+                area.appendChild(b);
+            });
+
+            let time = 100;
+            const bar = document.getElementById('timer-bar');
+            timer = setInterval(() => {
+                time -= 1;
+                bar.style.width = time + "%";
+                if (time <= 0) { clearInterval(timer); alert("انتهى الوقت!"); loadNext(); }
+            }, 150);
+        }
+    </script>
+</body>
+</html>
