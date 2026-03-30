@@ -2,218 +2,329 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق أَثَر | النسخة الكاملة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق أَثَر | محمد خير أبو بلال</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap');
-        :root { --p: #1a2a3a; --a: #c5a059; --bg: #f4f7f9; --w: #ffffff; --g: #27ae60; --r: #c0392b; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; color: var(--p); text-align: center; transition: 0.5s; }
-        .header { background: var(--p); color: white; padding: 10px 20px; border-bottom: 4px solid var(--a); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 1000; }
-        .coins-display { font-weight: 800; color: var(--a); background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 12px; border: 1px solid var(--a); }
-        .shop-icon { background: var(--a); color: var(--p); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card { background: var(--w); max-width: 500px; margin: 25px auto; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; border: 1px solid #eee; }
-        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; font-family: inherit; background: white; color: var(--p); }
-        .btn:hover { border-color: var(--a); background: #fffdf5; transform: translateY(-2px); }
+        /* التعريفات الأساسية (الوضع الفاتح) */
+        :root {
+            --p: #1a2a3a; /* كحلي */
+            --a: #c5a059; /* ذهبي */
+            --bg: #f4f7f9;
+            --w: #ffffff;
+            --g: #27ae60; /* أخضر */
+            --r: #c0392b; /* أحمر */
+            --t: #555;
+        }
+
+        /* تعريفات الوضع الليلي */
+        body.dark-mode {
+            --p: #c5a059; /* الذهبي يصبح الأساسي للخطوط */
+            --bg: #121212;
+            --w: #1e1e1e;
+            --t: #bbb;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            color: var(--p);
+            text-align: center;
+            transition: 0.3s;
+            overflow-x: hidden;
+            -webkit-user-select: none; /* منع تحديد النص */
+        }
+
+        /* شريط التطبيق العلوي (Header) */
+        .app-header {
+            background: var(--w);
+            color: var(--p);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title { margin: 0; font-size: 24px; font-weight: 800; }
+        .header-icons { display: flex; gap: 15px; font-size: 20px; }
+        .header-icons i { cursor: pointer; color: var(--p); }
+
+        /* حاوية البطاقات (Main Content) */
+        .app-content { padding: 20px; }
+
+        .card {
+            background: var(--w);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+            display: none; /* مخفية افتراضياً */
+        }
+
+        .card.active { display: block; } /* تظهر عند النشاط */
+
+        /* الأزرار الاحترافية */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            border: 2px solid #eee;
+            background: var(--w);
+            color: var(--p);
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:active { transform: scale(0.98); }
         .btn-p { background: var(--p); color: var(--a); border: none; }
-        .btn-back { background: none; border: none; color: #888; font-weight: bold; cursor: pointer; text-decoration: underline; margin-top: 15px; display: inline-block; }
-        .hidden { display: none !important; }
-        .timer-bg { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin: 15px 0; overflow: hidden; }
-        #bar { height: 100%; background: var(--a); width: 100%; transition: 0.1s linear; }
-        .shop-grid { display: grid; gap: 10px; margin-top: 15px; }
-        .shop-item { background: #f9f9f9; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; }
-        .buy-btn { background: var(--p); color: var(--a); border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 800; }
-        .score-row { display: flex; justify-content: space-around; margin-bottom: 15px; font-weight: 800; color: var(--a); }
+        .btn i { margin-left: 10px; } /* أيقونة يمين النص */
+
+        /* زر الرجوع الملكي */
+        .btn-back {
+            background: none; border: none; color: var(--t);
+            font-weight: bold; cursor: pointer; text-decoration: underline;
+            margin-top: 20px; font-size: 15px;
+        }
+
+        /* نظام النقاط والمستوى */
+        .score-info {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f9f9f9; padding: 10px 15px; border-radius: 10px;
+            margin-bottom: 20px; color: var(--p); border: 1px solid #eee;
+        }
+
+        .score-val { color: var(--a); font-weight: 800; }
+
+        /* العداد الزمني (Timer) */
+        .timer-bar {
+            width: 100%; height: 6px; background: #eee;
+            border-radius: 3px; overflow: hidden; margin-bottom: 15px;
+        }
+        #timer-fill { height: 100%; background: var(--a); width: 100%; transition: 0.1s linear; }
+
+        /* المتجر المطور */
+        .shop-grid { display: grid; gap: 10px; }
+        .shop-item {
+            background: #fdfdfd; padding: 15px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #eee;
+        }
+        .buy-btn { background: var(--p); color: var(--a); border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; }
+
+        /* الألوان عند الإجابة */
         .correct { border-color: var(--g) !important; background: #eafff2 !important; color: var(--g); }
         .wrong { border-color: var(--r) !important; background: #fff0f0 !important; color: var(--r); }
-        footer { font-size: 12px; color: #aaa; padding: 20px; }
+
+        footer { font-size: 11px; color: #aaa; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="coins-display">💰 <span id="pts-val">0</span> <small id="rank-tag"></small></div>
-        <h2 style="margin:0; font-size: 22px;">أَثَر</h2>
-        <div class="shop-icon" onclick="showScreen('scr-shop')">🛒</div>
-    </div>
-
-    <div id="scr-home" class="card">
-        <h3>مرحباً بك في أَثَر</h3>
-        <p>موسوعة العقيدة والسيرة النبوية</p>
-        <button class="btn btn-p" onclick="showScreen('scr-modes')">🎮 ابدأ اللعب</button>
-        <button class="btn" onclick="showScreen('scr-shop')">🛒 المتجر الملكي</button>
-        <p style="font-size: 11px; color: #999;">تصميم: محمد خير أبو بلال</p>
-    </div>
-
-    <div id="scr-modes" class="card hidden">
-        <h3>اختر طور اللعب</h3>
-        <button class="btn" onclick="setMode('solo')">👤 لاعب واحد</button>
-        <button class="btn" onclick="setMode('group')">👥 لاعبان (تحدي)</button>
-        <button class="btn-back" onclick="showScreen('scr-home')">🔙 رجوع</button>
-    </div>
-
-    <div id="scr-levels" class="card hidden">
-        <h3>اختر القسم</h3>
-        <button class="btn" style="border-right: 6px solid #2980b9" onclick="startGame('aq')">⭐ العقيدة</button>
-        <button class="btn" style="border-right: 6px solid var(--g)" onclick="startGame('ez')">🌱 السيرة (سهل)</button>
-        <button class="btn" style="border-right: 6px solid var(--a)" onclick="startGame('md')">⚡ السيرة (متوسط)</button>
-        <button class="btn" style="border-right: 6px solid var(--r)" onclick="startGame('hd')">🔥 السيرة (صعب)</button>
-        <button class="btn-back" onclick="showScreen('scr-modes')">🔙 رجوع</button>
-    </div>
-
-    <div id="scr-shop" class="card hidden">
-        <h3 style="color:var(--a)">🛒 المتجر</h3>
-        <div class="shop-grid">
-            <div class="shop-item"><span>❄️ تجميد الوقت</span><button class="buy-btn" onclick="buyItem('freeze', 100)">100pt</button></div>
-            <div class="shop-item"><span>✂️ حذف إجابتين</span><button class="buy-btn" onclick="buyItem('half', 200)">200pt</button></div>
-            <div class="shop-item"><span>👑 لقب الملك</span><button class="buy-btn" onclick="buyItem('rank', 1000)">1000pt</button></div>
+    <div class="app-header">
+        <h1 class="header-title">أَثَر</h1>
+        <div class="header-icons">
+            <i class="fas fa-coins score-val"> <span id="header-pts">0</span></i>
+            <i class="fas fa-shopping-cart" onclick="showCard('scr-shop')"></i>
         </div>
-        <button class="btn-back" onclick="showScreen('scr-home')">🔙 رجوع</button>
     </div>
 
-    <div id="scr-game" class="card hidden">
-        <div id="group-ui" class="hidden">
-            <div id="current-player" style="font-weight:800; color:var(--p); margin-bottom:5px;"></div>
-            <div class="score-row"><div>P1: <span id="sc1">0</span></div><div>P2: <span id="sc2">0</span></div></div>
+    <div class="app-content">
+        
+        <div id="scr-home" class="card active">
+            <h2>مرحباً بك في أَثَر</h2>
+            <p>موسوعة العقيدة والسيرة | تصميم محمد خير أبو بلال</p>
+            <button class="btn btn-p" onclick="showCard('scr-modes')">
+                <i class="fas fa-play"></i> ابدأ التحدي الملكي
+            </button>
+            <button class="btn" onclick="showCard('scr-shop')">
+                <i class="fas fa-store"></i> متجر الجوائز
+            </button>
         </div>
-        <div class="timer-bg"><div id="bar"></div></div>
-        <h3 id="question-text" style="min-height:80px;"></h3>
-        <div id="options-container"></div>
-        <button class="btn" id="half-helper" style="display:none; background:#eee;" onclick="useHalfHelp()">استخدام حذف إجابتين ✂️</button>
-        <button class="btn-back" onclick="exitGame()">🏳️ انسحاب</button>
+
+        <div id="scr-modes" class="card">
+            <h3>اختر طور اللعب</h3>
+            <button class="btn" onclick="setMode('solo')"><i class="fas fa-user"></i> فردي (تجميع نقاط)</button>
+            <button class="btn" onclick="setMode('group')"><i class="fas fa-users"></i> جماعي (تحدي)</button>
+            <button class="btn-back" onclick="showCard('scr-home')">🔙 رجوع للرئيسية</button>
+        </div>
+
+        <div id="scr-levels" class="card">
+            <h3>اختر القسم</h3>
+            <button class="btn" style="border-right: 6px solid #2980b9" onclick="startGame('aq')">⭐ العقيدة والتوحيد</button>
+            <button class="btn" style="border-right: 6px solid var(--g)" onclick="startGame('ez')">🌱 السيرة (سهل)</button>
+            <button class="btn" style="border-right: 6px solid var(--a)" onclick="startGame('md')">⚡ السيرة (متوسط)</button>
+            <button class="btn" style="border-right: 6px solid var(--r)" onclick="startGame('hd')">🔥 السيرة (صعب)</button>
+            <button class="btn-back" onclick="showCard('scr-modes')">🔙 رجوع</button>
+        </div>
+
+        <div id="scr-shop" class="card">
+            <h3 style="color:var(--a)">🛒 متجر أَثَر</h3>
+            <div class="shop-grid">
+                <div class="shop-item"><span>❄️ تجميد الوقت</span><button class="buy-btn" onclick="buy('freeze', 150)">150pt</button></div>
+                <div class="shop-item"><span>👑 لقب "الملك"</span><button class="buy-btn" onclick="buy('rank', 1000)">1000pt</button></div>
+                <div class="shop-item"><span>🌑 الوضع الليلي</span><button class="buy-btn" onclick="buy('dark', 300)">300pt</button></div>
+            </div>
+            <button class="btn-back" onclick="showCard('scr-home')">🔙 رجوع للرئيسية</button>
+        </div>
+
+        <div id="scr-game" class="card">
+            <div id="group-info" class="hidden">
+                <div class="turn-tag score-val">دور اللاعب <span id="p-turn">1</span></div>
+                <div class="score-row score-info">
+                    <div>P1: <span id="s1">0</span></div>
+                    <div>P2: <span id="s2">0</span></div>
+                </div>
+            </div>
+            <div class="timer-bar"><div id="timer-fill"></div></div>
+            <h3 id="q-txt"></h3>
+            <div id="opt-container"></div>
+            <button class="btn-back" onclick="exitGame()">🏳️ انسحاب ورجوع</button>
+        </div>
+
     </div>
 
-    <footer>حقوق البرمجة: محمد خير أبو بلال © 2026</footer>
+    <footer>حقوق البرمجة محفوظة: محمد خير أبو بلال © 2026</footer>
 
     <script>
-        const QUESTIONS_DB = {
+        // --- قاعدة البيانات (نماذج لـ 101 سؤال) ---
+        const DB = {
             aq: [
-                {q:"ما هو الركن الأول من أركان الإيمان؟", a:"الإيمان بالله", w:["الإيمان بالكتب","الإيمان بالرسل","الإيمان بالقدر"]},
-                {q:"ما معنى توحيد الربوبية؟", a:"إفراد الله بأفعاله كالخلق والرزق", w:["إفراد الله بالعبادة","إثبات الأسماء والصفات","محبة الله"]},
-                {q:"أين الله عز وجل كما ورد في القرآن؟", a:"في السماء على العرش استوى", w:["في كل مكان بذاته","لا مكان له","في الأرض"]},
-                {q:"ما هي الكلمة التي هي مفتاح الجنة؟", a:"لا إله إلا الله", w:["الحمد لله","سبحان الله","الله أكبر"]},
-                {q:"كم عدد أركان الإيمان؟", a:"6 أركان", w:["5 أركان","7 أركان","4 أركان"]},
-                {q:"من هو الملك الموكل بالوحي؟", a:"جبريل عليه السلام", w:["ميكائيل","إسرافيل","مالك"]},
-                {q:"الإيمان بالقدر هو الركن رقم كم؟", a:"السادس", w:["الخامس","الأول","الثالث"]},
-                {q:"ما هو الشرك الأكبر؟", a:"صرف العبادة لغير الله", w:["الرياء","الحلف بغير الله","الكذب"]},
-                {q:"من هم الملائكة؟", a:"عباد خلقوا من نور", w:["بشر صالحون","خلقوا من نار","جان"]},
-                {q:"ما هي أعظم سورة في القرآن؟", a:"الفاتحة", w:["البقرة","الإخلاص","يس"]}
+                {q:"ما هو الركن الأول من أركان الإيمان؟", a:"الإيمان بالله", w:["الإيمان بالكتب","الإيمان بالرسل"]},
+                {q:"كم عدد أركان الإيمان؟", a:"6 أركان", w:["5 أركان","7 أركان"]},
+                {q:"ما معنى توحيد الألوهية؟", a:"إفراد الله بالعبادة", w:["إفراد الله بالخلق","إثبات أسماء الله"]},
+                {q:"أين الله عز وجل؟", a:"في السماء على العرش استوى", w:["في كل مكان بذاته","لا مكان له"]},
+                {q:"من هو الملك الموكل بالوحي؟", a:"جبريل عليه السلام", w:["ميكائيل","إسرافيل"]},
+                {q:"ما هي الكلمة التي تدخل الإنسان في الإسلام؟", a:"لا إله إلا الله", w:["الحمد لله","سبحان الله"]},
+                {q:"من هم الملائكة؟", a:"عباد مكرمون خلقوا من نور", w:["بشر صالحون","جان"]},
+                {q:"ما هو أعظم ذنب عصي الله به؟", a:"الشرك بالله", w:["القتل","السرقة"]}
             ],
             ez: [
-                {q:"من هو نبي الإسلام؟", a:"محمد ﷺ", w:["إبراهيم","موسى","عيسى"]},
-                {q:"أين ولد النبي ﷺ؟", a:"مكة المكرمة", w:["المدينة المنورة","الطائف","جدة"]},
-                {q:"ما اسم والد النبي ﷺ؟", a:"عبد الله", w:["أبو طالب","عبد المطلب","حمزة"]},
-                {q:"كم كان عمر النبي حين بعث؟", a:"40 سنة", w:["25 سنة","30 سنة","50 سنة"]},
-                {q:"ما اسم مرضعة النبي ﷺ؟", a:"حليمة السعدية", w:["ثويبة","آمنة","خديجة"]},
-                {q:"إلى أين كانت الهجرة الأولى؟", a:"الحبشة", w:["المدينة","الطائف","خيبر"]},
-                {q:"ما اسم غار الذي نزل فيه الوحي؟", a:"حراء", w:["ثور","أحد","تبوك"]},
-                {q:"كم عدد أولاد النبي الذكور؟", a:"3", w:["2","4","1"]},
-                {q:"في أي شهر ولد النبي ﷺ؟", a:"ربيع الأول", w:["رمضان","شوال","رجب"]},
-                {q:"ما هي كنية النبي ﷺ؟", a:"أبو القاسم", w:["أبو إبراهيم","أبو محمد","أبو بكر"]}
+                {q:"من هو نبي الإسلام؟", a:"محمد ﷺ", w:["عيسى","موسى"]},
+                {q:"أين ولد النبي ﷺ؟", a:"مكة المكرمة", w:["المدينة","الطائف"]},
+                {q:"ما اسم والد النبي ﷺ؟", a:"عبد الله", w:["عبد المطلب","حمزة"]},
+                {q:"كم كان عمر النبي حين بعث؟", a:"40 سنة", w:["25 سنة","50 سنة"]},
+                {q:"ما اسم غار الذي نزل فيه الوحي؟", a:"حراء", w:["ثور","أحد"]},
+                {q:"إلى أين كانت الهجرة الأولى؟", a:"الحبشة", w:["المدينة","الطائف"]},
+                {q:"ما اسم ناقة الرسول ﷺ؟", a:"القصواء", w:["الشهباء","العضباء"]},
+                {q:"في أي شهر ولد النبي ﷺ؟", a:"ربيع الأول", w:["رمضان","رجب"]},
+                {q:"كم عدد الصلوات في اليوم؟", a:"5 صلوات", w:["3 صلوات","7 صلوات"]},
+                {q:"من هي أول زوجة للنبي ﷺ؟", a:"خديجة بنت خويلد", w:["عائشة","حفصة"]}
             ],
             md: [
-                {q:"ما اسم ناقة الرسول ﷺ؟", a:"القصواء", w:["العضباء","الورقاء","الشهباء"]},
-                {q:"في أي سنة كانت غزوة بدر؟", a:"2 هـ", w:["3 هـ","1 هـ","5 هـ"]},
-                {q:"من هو رفيق النبي في الهجرة؟", a:"أبو بكر الصديق", w:["عمر بن الخطاب","علي بن أبي طالب","عثمان"]},
-                {q:"ما هي أول صلاة فرضت؟", a:"الظهر", w:["الفجر","العصر","العشاء"]},
-                {q:"كم عدد غزوات النبي ﷺ؟", a:"27 غزوة", w:["15 غزوة","10 غزوات","50 غزوة"]},
-                {q:"ما هي السورة التي تسمى عروس القرآن؟", a:"الرحمن", w:["يس","الملك","الواقعة"]},
-                {q:"من هو أسد الله؟", a:"حمزة بن عبد المطلب", w:["خالد بن الوليد","علي بن أبي طالب","عمر"]},
-                {q:"ما اسم زوجة النبي الأولى؟", a:"خديجة بنت خويلد", w:["عائشة","حفصة","زينب"]},
-                {q:"كم استمرت الدعوة في مكة؟", a:"13 سنة", w:["10 سنوات","23 سنة","5 سنوات"]},
-                {q:"ما هو المسجد الذي أسس على التقوى؟", a:"قباء", w:["المسجد الحرام","المسجد النبوي","الأقصى"]}
+                {q:"من هو رفيق النبي في الهجرة؟", a:"أبو بكر الصديق", w:["عمر بن الخطاب","علي بن أبي طالب"]},
+                {q:"في أي سنة كانت غزوة بدر؟", a:"2 هـ", w:["3 هـ","1 هـ"]},
+                {q:"كم عدد غزوات النبي ﷺ؟", a:"27 غزوة", w:["15 غزوة","10 غزوات"]},
+                {q:"ما هي أول صلاة فرضت على المسلمين؟", a:"الظهر", w:["الفجر","العصر"]},
+                {q:"من هو الملقب بأسد الله؟", a:"حمزة بن عبد المطلب", w:["خالد بن الوليد","علي"]},
+                {q:"ما اسم المرضعة التي أرضعت النبي؟", a:"حليمة السعدية", w:["آمنة","ثويبة"]},
+                {q:"كم استمرت الدعوة في مكة؟", a:"13 سنة", w:["10 سنوات","23 سنة"]},
+                {q:"ما هو المسجد الذي أسس على التقوى؟", a:"مسجد قباء", w:["المسجد الحرام","الأقصى"]}
             ],
             hd: [
-                {q:"من هو الصحابي الذي اهتز لموته العرش؟", a:"سعد بن معاذ", w:["حمزة","جعفر الطيار","مصعب بن عمير"]},
-                {q:"ما هي السورة التي تسمى الفاضحة؟", a:"التوبة", w:["المنافقون","الأحزاب","الفتح"]},
-                {q:"من هو ترجمان القرآن؟", a:"عبد الله بن عباس", w:["عبد الله بن مسعود","معاذ بن جبل","أبي بن كعب"]},
-                {q:"في أي غزوة كُسرت بيضة النبي ﷺ؟", a:"أحد", w:["الخندق","خيبر","حنين"]},
-                {q:"من هو الصحابي الذي تستحي منه الملائكة؟", a:"عثمان بن عفان", w:["أبو بكر","عمر","علي"]},
-                {q:"ما اسم السيف الذي أهداه النبي لعلي؟", a:"ذو الفقار", w:["البتار","الصارم","الحسام"]},
-                {q:"كم عدد التكبيرات في صلاة الجنازة؟", a:"4", w:["5","3","7"]},
-                {q:"من هي الملقبة بذات النطاقين؟", a:"أسماء بنت أبي بكر", w:["عائشة","فاطمة","خديجة"]},
-                {q:"من هو الصحابي الذي لُقب بذي النورين؟", a:"عثمان بن عفان", w:["علي","عمر","أبو عبيدة"]},
-                {q:"ما هي آخر آية نزلت في القرآن؟", a:"واتقوا يوماً ترجعون فيه إلى الله", w:["اليوم أكملت لكم دينكم","إذا جاء نصر الله","قل هو الله أحد"]}
+                {q:"من هو الصحابي الذي اهتز لموته العرش؟", a:"سعد بن معاذ", w:["حمزة","جعفر الطيار"]},
+                {q:"ما هي السورة التي تسمى الفاضحة؟", a:"سورة التوبة", w:["سورة المنافقون","سورة الأحزاب"]},
+                {q:"في أي غزوة كُسرت بيضة النبي ﷺ؟", a:"غزوة أحد", w:["غزوة الخندق","غزوة خيبر"]},
+                {q:"من هو الصحابي الذي تستحي منه الملائكة؟", a:"عثمان بن عفان", w:["أبو بكر","عمر"]},
+                {q:"من هي الملقبة بذات النطاقين؟", a:"أسماء بنت أبي بكر", w:["فاطمة","خديجة"]},
+                {q:"من هو الصحابي الملقب بذي النورين؟", a:"عثمان بن عفان", w:["علي","عمر"]},
+                {q:"ما هي آخر آية نزلت في القرآن؟", a:"واتقوا يوماً ترجعون فيه إلى الله", w:["اليوم أكملت لكم دينكم","إذا جاء نصر الله"]}
             ]
         };
 
-        let points = parseInt(localStorage.getItem('athar_pts')) || 0;
-        let gameMode = 'solo', currentPlayer = 1, scores = {1:0, 2:0}, pool = [], timer, isActive = true, currentQ;
-        let powerFrozen = false, powerHalf = false;
+        // --- نظام الحفظ الذكي والمشتريات ---
+        let pts = parseInt(localStorage.getItem('ath_pts')) || 0;
+        let mode = 'solo', scores = {1:0, 2:0}, turn = 1;
+        let pool = [], timer, active = true;
+        let frozen = false;
 
-        function showScreen(id) {
-            document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+        function syncData() {
+            document.getElementById('header-pts').innerText = pts;
+            localStorage.setItem('ath_pts', pts);
+            // تفعيل الألقاب والميزات المحفوظة
+            if(localStorage.getItem('ath_dark')) document.body.classList.add('dark-mode');
+        }
+        syncData(); // تفعيل الحفظ فور فتح التطبيق
+
+        function showCard(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        function updatePoints() {
-            document.getElementById('pts-val').innerText = points;
-            localStorage.setItem('athar_pts', points);
-            if(localStorage.getItem('athar_king')) document.getElementById('rank-tag').innerText = "| الملك 👑";
-        }
-        updatePoints();
-
-        function buyItem(item, cost) {
-            if(points >= cost) {
-                points -= cost; updatePoints();
-                if(item==='freeze') powerFrozen=true;
-                if(item==='half') powerHalf=true;
-                if(item==='rank') localStorage.setItem('athar_king', '1');
-                updatePoints(); alert('تم الشراء بنجاح!');
-            } else alert('نقاطك لا تكفي!');
+        function buy(item, cost) {
+            if(pts >= cost) {
+                pts -= cost; syncData();
+                if(item === 'dark') { localStorage.setItem('ath_dark', '1'); syncData(); alert('🌑 تم تفعيل الوضع الليلي بنجاح!'); }
+                if(item === 'freeze') { frozen = true; alert('❄️ تم التجميد للسؤال القادم!'); }
+                if(item === 'rank') { alert('👑 مبروك! حصلت على لقب الملك.'); }
+            } else { alert('❌ نقاطك لا تكفي!'); }
         }
 
-        function setMode(m) { gameMode = m; showScreen('scr-levels'); }
+        function setMode(m) { mode = m; showCard('scr-levels'); }
 
         function startGame(lvl) {
-            pool = [...QUESTIONS_DB[lvl]]; scores = {1:0, 2:0}; currentPlayer = 1;
-            showScreen('scr-game');
-            if(gameMode === 'group') document.getElementById('group-ui').classList.remove('hidden');
-            else document.getElementById('group-ui').classList.add('hidden');
-            loadNext();
+            pool = [...DB[lvl]]; scores = {1:0, 2:0}; turn = 1;
+            showCard('scr-game');
+            if(mode === 'group') document.getElementById('group-info').classList.remove('hidden');
+            else document.getElementById('group-info').classList.add('hidden');
+            next();
         }
 
-        function useHalfHelp() {
-            if(!powerHalf) return; powerHalf = false;
-            document.getElementById('half-helper').style.display = 'none';
-            let btns = Array.from(document.querySelectorAll('#options-container .btn'));
-            let removed = 0;
-            btns.forEach(b => { if(b.innerText !== currentQ.a && removed < 2) { b.style.visibility = 'hidden'; removed++; } });
-        }
-
-        function loadNext() {
-            if(timer) clearInterval(timer); isActive = true;
+        function next() {
+            if(timer) clearInterval(timer); active = true;
             if(pool.length === 0) { 
-                alert("انتهى القسم!"); 
-                points += scores[1] + scores[2]; updatePoints();
-                showScreen('scr-home'); return; 
+                alert("أحسنت! انتهى القسم. نقاطك الكلية: " + (pts + scores[1] + scores[2]));
+                pts += scores[1] + scores[2]; syncData();
+                showCard('scr-home'); return;
             }
-            document.getElementById('half-helper').style.display = powerHalf ? 'block' : 'none';
-            document.getElementById('current-player').innerText = `دور اللاعب ${currentPlayer}`;
-            document.getElementById('sc1').innerText = scores[1];
-            document.getElementById('sc2').innerText = scores[2];
-            currentQ = pool.splice(Math.floor(Math.random()*pool.length), 1)[0];
-            let options = [currentQ.a, ...currentQ.w].sort(() => Math.random() - 0.5);
-            document.getElementById('question-text').innerText = currentQ.q;
-            const container = document.getElementById('options-container');
-            container.innerHTML = "";
-            options.forEach(opt => {
+
+            document.getElementById('p-turn').innerText = turn;
+            document.getElementById('s1').innerText = scores[1];
+            document.getElementById('s2').innerText = scores[2];
+
+            let qD = pool.splice(Math.floor(Math.random()*pool.length), 1)[0];
+            let ops = [qD.a, ...qD.w].sort(() => Math.random() - 0.5);
+            
+            document.getElementById('q-txt').innerText = qD.q;
+            const box = document.getElementById('opt-container');
+            box.innerHTML = "";
+            ops.forEach(opt => {
                 const b = document.createElement('button'); b.className = "btn"; b.innerText = opt;
                 b.onclick = () => {
-                    if(!isActive) return; isActive = false;
-                    if(opt === currentQ.a) { scores[currentPlayer] += 20; b.classList.add('correct'); }
-                    else b.classList.add('wrong');
-                    if(gameMode === 'group') currentPlayer = (currentPlayer === 1) ? 2 : 1;
-                    setTimeout(loadNext, 1000);
+                    if(!active) return; active = false;
+                    if(opt === qD.a) { scores[turn] += 20; b.classList.add('correct'); pts += 5; syncData(); }
+                    else { b.classList.add('wrong'); }
+                    if(mode === 'group') turn = (turn === 1) ? 2 : 1;
+                    setTimeout(next, 1000);
                 };
-                container.appendChild(b);
+                box.appendChild(b);
             });
-            if(!powerFrozen) {
+
+            if(!frozen) {
                 let w = 100;
-                timer = setInterval(() => { w -= 2; document.getElementById('bar').style.width = w + "%"; if(w <= 0) { clearInterval(timer); loadNext(); } }, 200);
-            } else { document.getElementById('bar').style.width = "100%"; powerFrozen = false; }
+                timer = setInterval(() => { 
+                    w -= 2; document.getElementById('timer-fill').style.width = w + "%"; 
+                    if(w <= 0) { clearInterval(timer); next(); } 
+                }, 200);
+            } else { document.getElementById('timer-fill').style.width = "100%"; frozen = false; }
         }
 
-        function exitGame() { if(confirm("رجوع؟")) { if(timer) clearInterval(timer); showScreen('scr-home'); } }
+        function exitGame() { if(confirm("🏳️ هل تريد الانسحاب ورجوع للقائمة؟")) { if(timer) clearInterval(timer); showCard('scr-home'); } }
     </script>
 </body>
 </html>
